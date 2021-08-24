@@ -1,0 +1,6 @@
+C:\Users\yello\source\repos\OptiCube\OptiCube\bin\x64\Debug\OptiCube.exe.config
+C:\Users\yello\source\repos\OptiCube\OptiCube\bin\x64\Debug\OptiCube.exe
+C:\Users\yello\source\repos\OptiCube\OptiCube\bin\x64\Debug\OptiCube.pdb
+C:\Users\yello\source\repos\OptiCube\OptiCube\obj\x64\Debug\OptiCube.csproj.CoreCompileInputs.cache
+C:\Users\yello\source\repos\OptiCube\OptiCube\obj\x64\Debug\OptiCube.exe
+C:\Users\yello\source\repos\OptiCube\OptiCube\obj\x64\Debug\OptiCube.pdb
