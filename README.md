@@ -22,6 +22,42 @@ A near-optimal 2x2 Rubik's Cube solver using a Breadth-First Search Algorithm
 ## How does it work?
 This program utilizes a breadth-first search algorithm to find the shortest path from a scrambled state to a Sune CLL case, then subsequently solves the CLL.
 
+## Main Logic:
+
+```
+// desired state for forcing Sune CLL is nxxnxxnxYYxxWRGWOGWOBWRB
+// where n = sticker must not be solved in the end
+// and   x = sticker's end color is irrelevant
+
+while (!issolved)
+{
+    depth++;
+    log(" - searching depth " + depth);
+    Variations<char> variations = new Variations<char>(validmoves, depth, GenerateOption.WithRepetition);
+
+    foreach (IList<char> test_sequence in variations)
+    {
+        foreach (var move in test_sequence)
+        {
+            seq += move + " ";
+            update_cube(move);
+        }
+
+        if (statesEqual(cornerstate_initial, cornerstate_desired))
+        {
+            solved();
+            return seq;
+        }
+        seq = ""; //seq didn't work so reset
+
+        for (int z = 0; z < corner_initial.Length; z++)
+        {
+            corner_initial[z] = corner_backup[z]; //restore original cube state after testing
+        }
+    }
+}
+```
+
 Yes, forcing a Sune CLL is significantly more computation-heavy than just forcing a solved layer, but sorry I'm too lazy to hardcode every CLL.
 
 Even on mediocre hardware, this program is capable of searching about 300,000 branches per second. So solve times vary from only a few seconds to about two minutes depending on the move depth of the solution to the cube.
