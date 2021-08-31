@@ -16,8 +16,7 @@ A near-optimal 2x2 Rubik's Cube solver using a Breadth-First Search Algorithm
      [*]   - searching depth 5
 
      [*]   searched 33253 branches in 101ms (328146.617483653 per second)
-     [*]   stage 1: R U R' F' R
-     [*]   stage 2: L F' L' F L' U' L
+     [*]   cube solution: R U R' F' R L F' L' F L' U' L
 
 ## How does it work?
 This program utilizes a breadth-first search algorithm to find the shortest path from a scrambled state to a Sune CLL case, then subsequently solves the CLL.
