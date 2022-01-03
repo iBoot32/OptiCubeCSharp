@@ -8,15 +8,16 @@ A near-optimal 2x2 Rubik's Cube solver using a Breadth-First Search Algorithm
 
 ## Example
     opticube R F' R' F' R2 F2 R2 U' F'
-    
-     [*]   - searching depth 1
-     [*]   - searching depth 2
-     [*]   - searching depth 3
-     [*]   - searching depth 4
-     [*]   - searching depth 5
 
-     [*]   searched 33253 branches in 101ms (328146.617483653 per second)
-     [*]   cube solution: R U R' F' R L F' L' F L' U' L
+	[*]   - searching depth 1
+	[*]   - searching depth 2
+	[*]   - searching depth 3
+	[*]   - searching depth 4
+	[*]   - searching depth 5
+
+	[*]   checked 33253 states in 17ms (1906173.15089224 per second)
+	[*]   stage 1: R U R' F' R
+	[*]   stage 2: L F' L' F L' U' L
 
 ## How does it work?
 This program utilizes a breadth-first search algorithm to find the shortest path from a scrambled state to a Sune CLL case, then subsequently solves the CLL.
@@ -32,13 +33,13 @@ while (!issolved)
 {
     depth++;
     log(" - searching depth " + depth);
-    Variations<char> variations = new Variations<char>(validmoves, depth, GenerateOption.WithRepetition);
+    Variations<char> variations = new Variations<char>(validmoves, depth, GenerateOption.WithRepetition); //generate variations to test
 
     foreach (IList<char> test_sequence in variations)
     {
         foreach (var move in test_sequence)
         {
-            seq += move + " ";
+            test_sequence += move + " ";
             update_cube(move);
         }
 
@@ -48,17 +49,13 @@ while (!issolved)
             return seq;
         }
         seq = ""; //seq didn't work so reset
-
-        for (int z = 0; z < corner_initial.Length; z++)
-        {
-            corner_initial[z] = corner_backup[z]; //restore original cube state after testing
-        }
+        Buffer.BlockCopy(corner_backup, 0, corner_init, 0, corner_init.Length * sizeof(char)); //restore original state pre-testing
     }
 }
 ```
 
 Yes, forcing a Sune CLL is significantly more computation-heavy than just forcing a solved layer, but sorry I'm too lazy to hardcode every CLL.
 
-Even on mediocre hardware, this program is capable of searching about 300,000 branches per second. So solve times vary from only a few seconds to about two minutes depending on the move depth of the solution to the cube.
+Even on mediocre hardware, this program is capable of searching about 1,800,000 branches per second. So solve times vary from only a few seconds to about two minutes depending on the move depth of the solution to the cube.
 
 

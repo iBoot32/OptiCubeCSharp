@@ -21,239 +21,72 @@ namespace OptiCube
          *     
          */
 
-        public static string corner = "YRBYOBYOGYRGWRGWOGWOBWRB"; //white on bottom for 2x2
-        public static string cornerstring;
-        public static string[] cornerarray = new string[24];
-        public static string[] othertemp = new string[24];
-
-        public static void calc (string[] args)
+        public static char[] cornerarray =
         {
-            for (int i = 0; i < 24; i++)
-            {
-                cornerarray[i] = corner.Substring(i, 1);
-            }
+            'Y','R','B',
+            'Y','O','B',
+            'Y','O','G',
+            'Y','R','G',
+            'W','R','G',
+            'W','O','G',
+            'W','O','B',
+            'W','R','B'
+        };
 
+        public static char[] solved =
+        {
+            'Y','R','B',
+            'Y','O','B',
+            'Y','O','G',
+            'Y','R','G',
+            'W','R','G',
+            'W','O','G',
+            'W','O','B',
+            'W','R','B'
+        };
 
+        public static Dictionary<string, int[,]> swaps = new Dictionary<string, int[,]>
+        {
+            //formatted as:    "key", { {source sticker, dest sticker} }
+            {"R", new int[,] { {3, 20}, {4, 19}, {5, 18}, {18, 17}, {19, 16}, {20, 15}, {15, 8}, {16, 7}, {17, 6}, {6, 5}, {7, 4}, {8, 3}, }},
+            {"R'", new int[,] { {20, 3}, {19, 4}, {18, 5}, {17, 18}, {16, 19}, {15, 20}, {8, 15}, {7, 16}, {6, 17}, {5, 6}, {4, 7}, {3, 8}, }},
+            {"R2", new int[,] { {4, 16}, {16, 4}, {7, 19}, {19, 7}, {3, 15}, {15, 3}, {6, 18}, {18, 6}, {8, 20}, {20, 8}, {5, 17}, {17, 5}, }}, //could possibly reduce this to swaps, then use tuple swapping
+
+            {"U", new int[,] { {0, 3}, {1, 5}, {2, 4}, {3, 6}, {4, 8}, {5, 7}, {6, 9}, {7, 11}, {8, 10}, {9, 0}, {10, 2}, {11, 1}, }},
+            {"U'", new int[,] { {3, 0}, {5, 1}, {4, 2}, {6, 3}, {8, 4}, {7, 5}, {9, 6}, {11, 7}, {10, 8}, {0, 9}, {2, 10}, {1, 11}, }},
+            {"U2", new int[,] { {0, 6}, {1, 7}, {2, 8}, {3, 9}, {4, 10}, {5, 11}, {6, 0}, {7, 1}, {8, 2}, {9, 3}, {10, 4}, {11, 5}, }},
+
+            {"L", new int[,] { {0, 11}, {1, 10}, {2, 9}, {9, 14}, {10, 13}, {11, 12}, {12, 23}, {13, 22}, {14, 21}, {21, 2}, {22, 1}, {23, 0}, }},
+            {"L'", new int[,] { {11, 0}, {10, 1}, {9, 2}, {14, 9}, {13, 10}, {12, 11}, {23, 12}, {22, 13}, {21, 14}, {2, 21}, {1, 22}, {0, 23}, }},
+            {"L2", new int[,] { {0, 12}, {1, 13}, {2, 14}, {9, 21}, {10, 22}, {11, 23}, {12, 0}, {13, 1}, {14, 2}, {21, 9}, {22, 10}, {23, 11}, }},
+
+            {"D", new int[,] { {12, 15}, {13, 17}, {14, 16}, {15, 18}, {16, 20}, {17, 19}, {18, 21}, {19, 23}, {20, 22}, {21, 12}, {22, 14}, {23, 13}, }},
+            {"D'", new int[,] { {15, 12}, {17, 13}, {16, 14}, {18, 15}, {20, 16}, {19, 17}, {21, 18}, {23, 19}, {22, 20}, {12, 21}, {14, 22}, {13, 23}, }},
+            {"D2", new int[,] { {12, 18}, {13, 19}, {14, 20}, {15, 21}, {16, 22}, {17, 23}, {18, 12}, {19, 13}, {20, 14}, {21, 15}, {22, 16}, {23, 17}, }},
+
+            {"F", new int[,] { {9, 7}, {10, 6}, {11, 8}, {6, 16}, {7, 15}, {8, 17}, {15, 13}, {16, 12}, {17, 14}, {12, 10}, {13, 9}, {14, 11}, }},
+            {"F'", new int[,] { {7, 9}, {6, 10}, {8, 11}, {16, 6}, {15, 7}, {17, 8}, {13, 15}, {12, 16}, {14, 17}, {10, 12}, {9, 13}, {11, 14}, }},
+            {"F2", new int[,] { {9, 15}, {10, 16}, {11, 17}, {6, 12}, {7, 13}, {8, 14}, {15, 9}, {16, 10}, {17, 11}, {12, 6}, {13, 7}, {14, 8}, }},
+
+            {"B", new int[,] { {0, 22}, {1, 21}, {2, 23}, {21, 19}, {22, 18}, {23, 20}, {18, 4}, {19, 3}, {20, 5}, {3, 1}, {4, 0}, {5, 2}, }},
+            {"B'", new int[,] { {22, 0}, {21, 1}, {23, 2}, {19, 21}, {18, 22}, {20, 23}, {4, 18}, {3, 19}, {5, 20}, {1, 3}, {0, 4}, {2, 5}, }},
+            {"B2", new int[,] { {0, 18}, {1, 19}, {2, 20}, {21, 3}, {22, 4}, {23, 5}, {18, 0}, {19, 1}, {20, 2}, {3, 21}, {4, 22}, {5, 23}, }},
+        };
+
+        public static char[] othertemp = new char[24];
+
+        public static char[] str (string[] args)
+        {
             foreach (var move in args)
             {
-                manipulate(move);
+                Buffer.BlockCopy(cornerarray, 0, othertemp, 0, cornerarray.Length * sizeof(char));
+                for (int i = 0; i < 12; i++)
+                {
+                    othertemp[swaps[move][i, 1]] = cornerarray[swaps[move][i, 0]];
+                }
+                Buffer.BlockCopy(othertemp, 0, cornerarray, 0, cornerarray.Length * sizeof(char));
             }
-            //log(cornerstring);
-        }
-
-        public static void manipulate(string move)
-        {
-            switch (move)
-            {
-                case "R":
-                    resetcorner();
-                    put(cornerarray, 3, 20); put(cornerarray, 4, 19); put(cornerarray, 5, 18); //put corner 2 into corner 7
-                    put(cornerarray, 18, 17); put(cornerarray, 19, 16); put(cornerarray, 20, 15); //put corner 7 into corner 6
-                    put(cornerarray, 15, 8); put(cornerarray, 16, 7); put(cornerarray, 17, 6); //put corner 6 into corner 3
-                    put(cornerarray, 6, 5); put(cornerarray, 7, 4); put(cornerarray, 8, 3); //put corner 3 into corner 2
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-
-                    break;
-                case "R'":
-                    for (int z = 0; z < 3; z++) //R' is the same as R R R
-                    {
-                        resetcorner();
-                        put(cornerarray, 3, 20); put(cornerarray, 4, 19); put(cornerarray, 5, 18); //put corner 2 into corner 7
-                        put(cornerarray, 18, 17); put(cornerarray, 19, 16); put(cornerarray, 20, 15); //put corner 7 into corner 6
-                        put(cornerarray, 15, 8); put(cornerarray, 16, 7); put(cornerarray, 17, 6); //put corner 6 into corner 3
-                        put(cornerarray, 6, 5); put(cornerarray, 7, 4); put(cornerarray, 8, 3); //put corner 3 into corner 2
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "R2":
-                    for (int z = 0; z < 2; z++) //R2 is the same as R R
-                    {
-                        resetcorner();
-                        put(cornerarray, 3, 20); put(cornerarray, 4, 19); put(cornerarray, 5, 18); //put corner 2 into corner 7
-                        put(cornerarray, 18, 17); put(cornerarray, 19, 16); put(cornerarray, 20, 15); //put corner 7 into corner 6
-                        put(cornerarray, 15, 8); put(cornerarray, 16, 7); put(cornerarray, 17, 6); //put corner 6 into corner 3
-                        put(cornerarray, 6, 5); put(cornerarray, 7, 4); put(cornerarray, 8, 3); //put corner 3 into corner 2
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "L":
-                    resetcorner();
-                    put(cornerarray, 0, 11); put(cornerarray, 1, 10); put(cornerarray, 2, 9);
-                    put(cornerarray, 9, 14); put(cornerarray, 10, 13); put(cornerarray, 11, 12);
-                    put(cornerarray, 12, 23); put(cornerarray, 13, 22); put(cornerarray, 14, 21);
-                    put(cornerarray, 21, 2); put(cornerarray, 22, 1); put(cornerarray, 23, 0);
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-
-                    break;
-                case "L'":
-                    for (int z = 0; z < 3; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 11); put(cornerarray, 1, 10); put(cornerarray, 2, 9);
-                        put(cornerarray, 9, 14); put(cornerarray, 10, 13); put(cornerarray, 11, 12);
-                        put(cornerarray, 12, 23); put(cornerarray, 13, 22); put(cornerarray, 14, 21);
-                        put(cornerarray, 21, 2); put(cornerarray, 22, 1); put(cornerarray, 23, 0);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "L2":
-                    for (int z = 0; z < 2; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 11); put(cornerarray, 1, 10); put(cornerarray, 2, 9);
-                        put(cornerarray, 9, 14); put(cornerarray, 10, 13); put(cornerarray, 11, 12);
-                        put(cornerarray, 12, 23); put(cornerarray, 13, 22); put(cornerarray, 14, 21);
-                        put(cornerarray, 21, 2); put(cornerarray, 22, 1); put(cornerarray, 23, 0);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "U":
-                    resetcorner();
-                    put(cornerarray, 0, 3); put(cornerarray, 1, 5); put(cornerarray, 2, 4);
-                    put(cornerarray, 3, 6); put(cornerarray, 4, 8); put(cornerarray, 5, 7);
-                    put(cornerarray, 6, 9); put(cornerarray, 7, 11); put(cornerarray, 8, 10);
-                    put(cornerarray, 9, 0); put(cornerarray, 10, 2); put(cornerarray, 11, 1);
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    break;
-                case "U'":
-                    for (int z = 0; z < 3; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 3); put(cornerarray, 1, 5); put(cornerarray, 2, 4);
-                        put(cornerarray, 3, 6); put(cornerarray, 4, 8); put(cornerarray, 5, 7);
-                        put(cornerarray, 6, 9); put(cornerarray, 7, 11); put(cornerarray, 8, 10);
-                        put(cornerarray, 9, 0); put(cornerarray, 10, 2); put(cornerarray, 11, 1);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "U2":
-                    for (int z = 0; z < 2; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 3); put(cornerarray, 1, 5); put(cornerarray, 2, 4);
-                        put(cornerarray, 3, 6); put(cornerarray, 4, 8); put(cornerarray, 5, 7);
-                        put(cornerarray, 6, 9); put(cornerarray, 7, 11); put(cornerarray, 8, 10);
-                        put(cornerarray, 9, 0); put(cornerarray, 10, 2); put(cornerarray, 11, 1);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "D":
-                    resetcorner();
-                    put(cornerarray, 12, 15); put(cornerarray, 13, 17); put(cornerarray, 14, 16);
-                    put(cornerarray, 15, 18); put(cornerarray, 16, 20); put(cornerarray, 17, 19);
-                    put(cornerarray, 18, 21); put(cornerarray, 19, 23); put(cornerarray, 20, 22);
-                    put(cornerarray, 21, 12); put(cornerarray, 22, 14); put(cornerarray, 23, 13);
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-
-                    break;
-                case "D'":
-                    for (int z = 0; z < 3; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 12, 15); put(cornerarray, 13, 17); put(cornerarray, 14, 16);
-                        put(cornerarray, 15, 18); put(cornerarray, 16, 20); put(cornerarray, 17, 19);
-                        put(cornerarray, 18, 21); put(cornerarray, 19, 23); put(cornerarray, 20, 22);
-                        put(cornerarray, 21, 12); put(cornerarray, 22, 14); put(cornerarray, 23, 13);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "D2":
-                    for (int z = 0; z < 2; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 12, 15); put(cornerarray, 13, 17); put(cornerarray, 14, 16);
-                        put(cornerarray, 15, 18); put(cornerarray, 16, 20); put(cornerarray, 17, 19);
-                        put(cornerarray, 18, 21); put(cornerarray, 19, 23); put(cornerarray, 20, 22);
-                        put(cornerarray, 21, 12); put(cornerarray, 22, 14); put(cornerarray, 23, 13);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "F":
-                    resetcorner();
-                    put(cornerarray, 9, 7); put(cornerarray, 10, 6); put(cornerarray, 11, 8);
-                    put(cornerarray, 6, 16); put(cornerarray, 7, 15); put(cornerarray, 8, 17);
-                    put(cornerarray, 15, 13); put(cornerarray, 16, 12); put(cornerarray, 17, 14);
-                    put(cornerarray, 12, 10); put(cornerarray, 13, 9); put(cornerarray, 14, 11);
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    break;
-                case "F'":
-                    for (int z = 0; z < 3; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 9, 7); put(cornerarray, 10, 6); put(cornerarray, 11, 8);
-                        put(cornerarray, 6, 16); put(cornerarray, 7, 15); put(cornerarray, 8, 17);
-                        put(cornerarray, 15, 13); put(cornerarray, 16, 12); put(cornerarray, 17, 14);
-                        put(cornerarray, 12, 10); put(cornerarray, 13, 9); put(cornerarray, 14, 11);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "F2":
-                    for (int z = 0; z < 2; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 9, 7); put(cornerarray, 10, 6); put(cornerarray, 11, 8);
-                        put(cornerarray, 6, 16); put(cornerarray, 7, 15); put(cornerarray, 8, 17);
-                        put(cornerarray, 15, 13); put(cornerarray, 16, 12); put(cornerarray, 17, 14);
-                        put(cornerarray, 12, 10); put(cornerarray, 13, 9); put(cornerarray, 14, 11);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "B":
-                    resetcorner();
-                    put(cornerarray, 0, 22); put(cornerarray, 1, 21); put(cornerarray, 2, 23);
-                    put(cornerarray, 21, 19); put(cornerarray, 22, 18); put(cornerarray, 23, 20);
-                    put(cornerarray, 18, 4); put(cornerarray, 19, 3); put(cornerarray, 20, 5);
-                    put(cornerarray, 3, 1); put(cornerarray, 4, 0); put(cornerarray, 5, 2);
-                    for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-
-                    break;
-                case "B'":
-                    for (int z = 0; z < 3; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 22); put(cornerarray, 1, 21); put(cornerarray, 2, 23);
-                        put(cornerarray, 21, 19); put(cornerarray, 22, 18); put(cornerarray, 23, 20);
-                        put(cornerarray, 18, 4); put(cornerarray, 19, 3); put(cornerarray, 20, 5);
-                        put(cornerarray, 3, 1); put(cornerarray, 4, 0); put(cornerarray, 5, 2);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-                case "B2":
-                    for (int z = 0; z < 2; z++)
-                    {
-                        resetcorner();
-                        put(cornerarray, 0, 22); put(cornerarray, 1, 21); put(cornerarray, 2, 23);
-                        put(cornerarray, 21, 19); put(cornerarray, 22, 18); put(cornerarray, 23, 20);
-                        put(cornerarray, 18, 4); put(cornerarray, 19, 3); put(cornerarray, 20, 5);
-                        put(cornerarray, 3, 1); put(cornerarray, 4, 0); put(cornerarray, 5, 2);
-                        for (int i = 0; i < cornerarray.Length; i++) { cornerarray[i] = othertemp[i]; }
-                    }
-                    break;
-            }
-
-            cornerstring = "";
-            for (int i = 0; i < cornerarray.Length; i++)
-            {
-                cornerstring += cornerarray[i];
-            }
-        }
-
-        public static void resetcorner()
-        {
-            for (int i = 0; i < cornerarray.Length; i++) //reset othertemp
-            {
-                othertemp[i] = cornerarray[i];
-            }
-        }
-
-        static void put(string[] array, int positionA, int positionB)
-        {
-            othertemp[positionB] = array[positionA];
-        }
-
-        public static void log(string text)
-        {
-            Console.WriteLine("  " + text);
+            return cornerarray;
         }
     }
 }
