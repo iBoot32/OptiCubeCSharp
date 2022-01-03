@@ -4,3 +4,9 @@ C:\Users\tkocu\Desktop\OptiCube-main\OptiCube\bin\Release\OptiCube.pdb
 C:\Users\tkocu\Desktop\OptiCube-main\OptiCube\obj\Release\OptiCube.csproj.CoreCompileInputs.cache
 C:\Users\tkocu\Desktop\OptiCube-main\OptiCube\obj\Release\OptiCube.exe
 C:\Users\tkocu\Desktop\OptiCube-main\OptiCube\obj\Release\OptiCube.pdb
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\bin\Release\OptiCube.exe.config
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\bin\Release\OptiCube.exe
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\bin\Release\OptiCube.pdb
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\obj\Release\OptiCube.csproj.CoreCompileInputs.cache
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\obj\Release\OptiCube.exe
+C:\Users\tkocu\Desktop\git\OptiCube\OptiCube\obj\Release\OptiCube.pdb

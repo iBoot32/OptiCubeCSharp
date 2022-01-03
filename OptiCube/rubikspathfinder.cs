@@ -65,13 +65,27 @@ namespace RubiksPathFinder
             'W', 'R', 'B'
         };
 
+        public static char[] desired_state = 
+            //put your desired state of the cube here in the form of an array
+            //using x symbolizing the sticker's color is irrelevant,
+            //and n symbolizing the sticker must not be solved
+        {
+            'n', 'x', 'x',
+            'n', 'x', 'x',
+            'n', 'x', 'Y',
+            'Y', 'x', 'x',
+            'W', 'R', 'G',
+            'W', 'O', 'G',
+            'W', 'O', 'B',
+            'W', 'R', 'B'
+        };
+
         public static bool issolved = false;
         public static int done = 0;
         public static int depth = 0;
         public static string seq;
 
         public static char[] corner_init = new char[24];
-        public static char[] corner_fin = new char[24];
 
         public static char[] corner_backup = new char[24];
         public static char[] othertemp = new char[24];
@@ -79,10 +93,9 @@ namespace RubiksPathFinder
         public static Stopwatch st = new Stopwatch();
 
 
-        public static string path(char[] ci, char[] cf, string mult)
+        public static string path(char[] ci)
         {
             Buffer.BlockCopy(ci, 0, corner_init, 0, corner_init.Length * sizeof(char));
-            Buffer.BlockCopy(cf, 0, corner_fin, 0, corner_fin.Length * sizeof(char));
             Buffer.BlockCopy(corner_init, 0, corner_backup, 0, corner_init.Length * sizeof(char));
 
             while (!issolved)
@@ -103,7 +116,7 @@ namespace RubiksPathFinder
                     }
                     done++;
 
-                    if (statesEqual(corner_init, corner_fin))
+                    if (EndStateReached())
                     {
                         st.Stop();
                         solved();
@@ -116,19 +129,21 @@ namespace RubiksPathFinder
             return seq;
         }
 
-        public static bool statesEqual(char[] init, char[] fin)
+        //checks if the desired state can be reached. This function can be rewritten to define any "desired end state," not at all requiring the use of the desired_state array.
+        //for example, you could set all corners being oriented as a "desired end state". The only constraint is you return True once this state is reached, and false otherwise.
+        public static bool EndStateReached()
         {
-            for (int i = 0; i < init.Length; i++)
+            for (int i = 0; i < corner_init.Length; i++)
             {
                 //"x" can be used as "null," meaning the color of that sticker does not matter in the end
-                if (fin[i] != 'x') //if desired sticker doesn't matter, we good no need to check
+                if (desired_state[i] != 'x') //if desired sticker doesn't matter, we good no need to check
                 {
-                    if (init[i] != fin[i] && fin[i] != 'n') //need `&& fin[i] != "n"` or else it'll count fin[i] == "n" cases as unsolved
+                    if (corner_init[i] != desired_state[i] && desired_state[i] != 'n') //need `&& fin[i] != "n"` or else it'll count fin[i] == "n" cases as unsolved
                     {
                         return false;
                     }
                 }
-                if (fin[i] == 'n' && init[i] == solvedcube[i]) //use "n" to specify you want this sticker to NOT be solved in the end
+                if (desired_state[i] == 'n' && corner_init[i] == solvedcube[i]) //use "n" to specify you want this sticker to NOT be solved in the end
                 {
                     return false;
                 }
