@@ -10,47 +10,23 @@ using System.Threading.Tasks;
 
 namespace RubiksPathFinder
 {
-    class rubikspathfinder
+    class stage2
     {
-        /*
-         * RubiksPathFinder
-         * 
-         *   A program designed to find the optimal
-         *   path between two states on a Rubik's cube
-         *  
-         *  The best part is that this logic is super easy
-         *  to implement in any program. Simply add this class
-         *  file to your project, call it like:
-         *  
-         *      string solution = rubikspathfinder.path(current_cube_state_corner, current_cube_state_edge, desired_cube_state_corner, desired_cube_state_edge, show_all_sltns);
-         * 
-         *  And the program will return the optimal 
-         *  path to your desired final cube state.
-         *  
-         *  
-         *  IMPORTANT:
-         *      This program relies on a breadth-first search algorithm
-         *      As a result, most simple solutions (cross, one f2l pair, etc). 
-         *      should take only a few seconds to find. However, complex problems
-         *      could take a large number of minutes to generate.
-         * 
-         *          by Tom O'Donnell (iBoot32)
-         */
 
         public static char[] validmoves =
         {
-            'a', 'b', 'c',
-            'e', 'g', 'h',
+            'c',
+            'h',
             'i', 'j', 'k',
-            'p', 'q', 's'
+            'l'
         };
 
         public static string[] stdNotation =
         {
-            "R", "R'", "R2",
-            "L", "L'", "L2",
+            "R2",
+            "L2",
             "U", "U'", "U2",
-            "F", "F'", "F2",
+            "F2"
         };
 
         public static char[] solvedcube =
@@ -65,9 +41,10 @@ namespace RubiksPathFinder
             'W', 'R', 'B'
         };
 
+        public static bool issolved = false;
         public static int done = 0;
         public static int depth = 0;
-        public static string seq = "<SOLVED>";
+        public static string seq;
 
         public static char[] corner_init = new char[24];
 
@@ -121,25 +98,14 @@ namespace RubiksPathFinder
 
         public static bool endStateReached()
         {
-            for (int i = 0; i <= 9; i=i+3)
+            for (int i = 0; i < solvedcube.Length; i++)
             {
-                if (corner_init[i] != 'Y')
+                if (corner_init[i] != solvedcube[i])
                 {
                     return false;
                 }
             }
-            for (int i = 12; i <= 21; i = i + 3)
-            {
-                if (corner_init[i] != 'W')
-                {
-                    return false;
-                }
-            }
-            if (corner_init[1] != corner_init[10]) //prevent bad case where it's diag swap on bottom and everything else solved
-            {
-                return true;
-            }
-            return false;
+            return true;
         }
 
 
@@ -148,35 +114,11 @@ namespace RubiksPathFinder
         {
             switch (move)
             {
-                case 'a':
-                    put(3, 20); put(4, 19); put(5, 18); //put corner 2 into corner 7 on the temp array
-                    put(18, 17); put(19, 16); put(20, 15); //put corner 7 into corner 6
-                    put(15, 8); put(16, 7); put(17, 6); //put corner 6 into corner 3
-                    put(6, 5); put(7, 4); put(8, 3); //put corner 3 into corner 2
-                    break;
-                case 'b':
-                    put(20, 3); put(19, 4); put(18, 5); //put corner 2 into corner 7
-                    put(17, 18); put(16, 19); put(15, 20); //put corner 7 into corner 6
-                    put(8, 15); put(7, 16); put(6, 17); //put corner 6 into corner 3
-                    put(5, 6); put(4, 7); put(3, 8); //put corner 3 into corner 2
-                    break;
                 case 'c':
                     put(4, 16); put(16, 4); put(7, 19); //put corner 2 into corner 7
                     put(19, 7); put(3, 15); put(15, 3); //put corner 7 into corner 6
                     put(6, 18); put(18, 6); put(8, 20); //put corner 6 into corner 3
                     put(20, 8); put(5, 17); put(17, 5); //put corner 3 into corner 2
-                    break;
-                case 'e':
-                    put(0, 11); put(1, 10); put(2, 9);
-                    put(9, 14); put(10, 13); put(11, 12);
-                    put(12, 23); put(13, 22); put(14, 21);
-                    put(21, 2); put(22, 1); put(23, 0);
-                    break;
-                case 'g':
-                    put(11, 0); put(10, 1); put(9, 2);
-                    put(14, 9); put(13, 10); put(12, 11);
-                    put(23, 12); put(22, 13); put(21, 14);
-                    put(2, 21); put(1, 22); put(0, 23);
                     break;
                 case 'h':
                     put(0, 12); put(1, 13); put(2, 14);
@@ -202,24 +144,18 @@ namespace RubiksPathFinder
                     put(6, 0); put(7, 1); put(8, 2);
                     put(9, 3); put(10, 4); put(11, 5);
                     break;
-                case 'p':
-                    put(9, 7); put(10, 6); put(11, 8);
-                    put(6, 16); put(7, 15); put(8, 17);
-                    put(15, 13); put(16, 12); put(17, 14);
-                    put(12, 10); put(13, 9); put(14, 11);
-                    break;
-                case 'q':
-                    put(7, 9); put(6, 10); put(8, 11);
-                    put(16, 6); put(15, 7); put(17, 8);
-                    put(13, 15); put(12, 16); put(14, 17);
-                    put(10, 12); put(9, 13); put(11, 14);
-                    break;
-                case 's':
+                case 'l':
                     put(9, 15); put(10, 16); put(11, 17);
                     put(6, 12); put(7, 13); put(8, 14);
                     put(15, 9); put(16, 10); put(17, 11);
                     put(12, 6); put(13, 7); put(14, 8);
                     break;
+                    /*case 'm':
+                        put(0, 18); put(1, 19); put(2, 20);
+                        put(3, 21); put(4, 22); put(5, 23);
+                        put(18, 0); put(19, 1); put(20, 2);
+                        put(21, 3); put(22, 4); put(23, 5);
+                        break; */ //B2 move
             }
         }
 

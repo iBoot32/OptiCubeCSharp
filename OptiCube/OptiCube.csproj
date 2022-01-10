@@ -65,7 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cll.cs" />
+    <Compile Include="stage2.cs" />
     <Compile Include="combinatronics\Combinations.cs" />
     <Compile Include="combinatronics\GenerateOption.cs" />
     <Compile Include="combinatronics\IMetaCollection.cs" />
